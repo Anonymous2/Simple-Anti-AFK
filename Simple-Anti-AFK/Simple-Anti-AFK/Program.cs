@@ -38,6 +38,18 @@ namespace Simple_Anti_AFK
                 return;
             }
 
+            bool antiAfkBattleground = false;
+
+            Console.Write("Do you wish to never go AFK (useful in battlegrounds) or never let your character go offline? Answer with 'A' or 'B': ");
+            string answer = Console.ReadLine().ToUpper();
+
+            while (answer != "A" && answer != "B")
+            {
+                Console.Write("This option does not exist. Try again: ");
+                answer = Console.ReadLine().ToUpper();
+            }
+
+            antiAfkBattleground = answer == "A";
             Process process = processes[0];
 
             Console.WriteLine("Entering whisper loop now. Your character won't go AFK.");
@@ -67,24 +79,29 @@ namespace Simple_Anti_AFK
 
                     Thread.Sleep(1000);
 
-                    string goAfkString = "/afk";
-
-                    //! Let the player go AFK visually again so players won't bother them
-                    for (int i = 0; i < goAfkString.Length; ++i)
+                    if (!antiAfkBattleground)
                     {
-                        SendMessage(process.MainWindowHandle, WM_CHAR, new IntPtr(goAfkString[i]), IntPtr.Zero);
-                        Thread.Sleep(50);
-                    }
+                        string goAfkString = "/afk";
 
-                    SendMessage(process.MainWindowHandle, WM_KEYUP, new IntPtr(VK_RETURN), IntPtr.Zero);
-                    SendMessage(process.MainWindowHandle, WM_KEYDOWN, new IntPtr(VK_RETURN), IntPtr.Zero);
+                        //! Let the player go AFK visually again so players won't bother them
+                        for (int i = 0; i < goAfkString.Length; ++i)
+                        {
+                            SendMessage(process.MainWindowHandle, WM_CHAR, new IntPtr(goAfkString[i]), IntPtr.Zero);
+                            Thread.Sleep(50);
+                        }
+
+                        SendMessage(process.MainWindowHandle, WM_KEYUP, new IntPtr(VK_RETURN), IntPtr.Zero);
+                        SendMessage(process.MainWindowHandle, WM_KEYDOWN, new IntPtr(VK_RETURN), IntPtr.Zero);
+                    }
                 }
                 catch
                 {
 
                 }
 
-                Thread.Sleep(1700000); //! Sleep for ~28.3 minutes so we don't log to the char screen 
+                //! Sleep for ~28.3 minutes so we don't log to the char screen unless the user
+                //! wants to never go AFK. In that case, we run this anti-AFK line every ~4 min.
+                Thread.Sleep(antiAfkBattleground ? 290000 : 1700000);
             }
         }
     }
