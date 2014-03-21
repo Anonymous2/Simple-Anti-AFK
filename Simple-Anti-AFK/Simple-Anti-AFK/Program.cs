@@ -56,6 +56,8 @@ namespace Simple_Anti_AFK
                     processesList = processes.ToList();
                 }
             }
+            else
+                processesList.Add(processes[0]);
 
             bool antiAfkBattleground = false;
 
