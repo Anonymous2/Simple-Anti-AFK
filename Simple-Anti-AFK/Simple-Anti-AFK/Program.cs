@@ -21,8 +21,9 @@ namespace Simple_Anti_AFK
 
         static void Main(string[] args)
         {
-            //! Find the running WoW process. Only one may be running at the time this application is started.
+            //! Find the running WoW process.
             Process[] processes = Process.GetProcessesByName("Wow");
+            List<Process> processesList = new List<Process>();
 
             if (processes.Length == 0)
             {
@@ -31,17 +32,35 @@ namespace Simple_Anti_AFK
                 return;
             }
 
+            string answer = String.Empty;
+
             if (processes.Length > 1)
             {
-                Console.WriteLine("There's more than one WoW process running. Please only turn on the one you wish to not go AFK with. Afterwards, you can start the others again.");
-                Console.ReadKey();
-                return;
+                Console.Write("There's more than one WoW process running. Do you wish to Anti-AFK on all of them? Answer with 'Y' or 'N': ");
+                answer = Console.ReadLine().ToUpper();
+
+                while (answer != "Y" && answer != "N")
+                {
+                    Console.Write("This option does not exist. Try again: ");
+                    answer = Console.ReadLine().ToUpper();
+                }
+
+                if (answer == "N")
+                {
+                    Console.WriteLine("\nThe WoW process that was started first will now be targeted.");
+                    processesList.Add(processes[0]);
+                }
+                else
+                {
+                    Console.WriteLine("\nAll the WoW processes will now be targeted.");
+                    processesList = processes.ToList();
+                }
             }
 
             bool antiAfkBattleground = false;
 
-            Console.Write("Do you wish to never go AFK (useful in battlegrounds) or never let your character go offline? Answer with 'A' or 'B': ");
-            string answer = Console.ReadLine().ToUpper();
+            Console.Write("Do you wish to never go AFK (useful in battlegrounds) or never let your character(s) go offline? Answer with 'A' or 'B': ");
+            answer = Console.ReadLine().ToUpper();
 
             while (answer != "A" && answer != "B")
             {
@@ -50,53 +69,55 @@ namespace Simple_Anti_AFK
             }
 
             antiAfkBattleground = answer == "A";
-            Process process = processes[0];
 
-            Console.WriteLine("Entering whisper loop now. Your character won't go AFK.");
+            Console.WriteLine("Entering whisper loop now. Your character(s) won't go AFK.");
 
             while (true)
             {
-                try
+                foreach (Process process in processesList)
                 {
-                    string antiAfkString = "/w Namethatdoesnotexistatall a";
-
-                    //! Send the message
-                    SendMessage(process.MainWindowHandle, WM_KEYUP, new IntPtr(VK_RETURN), IntPtr.Zero);
-                    SendMessage(process.MainWindowHandle, WM_KEYDOWN, new IntPtr(VK_RETURN), IntPtr.Zero);
-
-                    Thread.Sleep(500);
-
-                    //! Write out the message above (slash opens chatbox automatically)
-                    for (int i = 0; i < antiAfkString.Length; ++i)
+                    try
                     {
-                        SendMessage(process.MainWindowHandle, WM_CHAR, new IntPtr(antiAfkString[i]), IntPtr.Zero);
-                        Thread.Sleep(50);
-                    }
+                        string antiAfkString = "/w Namethatdoesnotexistatall a";
 
-                    //! Send the message
-                    SendMessage(process.MainWindowHandle, WM_KEYUP, new IntPtr(VK_RETURN), IntPtr.Zero);
-                    SendMessage(process.MainWindowHandle, WM_KEYDOWN, new IntPtr(VK_RETURN), IntPtr.Zero);
+                        //! Send the message
+                        SendMessage(process.MainWindowHandle, WM_KEYUP, new IntPtr(VK_RETURN), IntPtr.Zero);
+                        SendMessage(process.MainWindowHandle, WM_KEYDOWN, new IntPtr(VK_RETURN), IntPtr.Zero);
 
-                    Thread.Sleep(1000);
+                        Thread.Sleep(500);
 
-                    if (!antiAfkBattleground)
-                    {
-                        string goAfkString = "/afk";
-
-                        //! Let the player go AFK visually again so players won't bother them
-                        for (int i = 0; i < goAfkString.Length; ++i)
+                        //! Write out the message above (slash opens chatbox automatically)
+                        for (int i = 0; i < antiAfkString.Length; ++i)
                         {
-                            SendMessage(process.MainWindowHandle, WM_CHAR, new IntPtr(goAfkString[i]), IntPtr.Zero);
+                            SendMessage(process.MainWindowHandle, WM_CHAR, new IntPtr(antiAfkString[i]), IntPtr.Zero);
                             Thread.Sleep(50);
                         }
 
+                        //! Send the message
                         SendMessage(process.MainWindowHandle, WM_KEYUP, new IntPtr(VK_RETURN), IntPtr.Zero);
                         SendMessage(process.MainWindowHandle, WM_KEYDOWN, new IntPtr(VK_RETURN), IntPtr.Zero);
-                    }
-                }
-                catch
-                {
 
+                        Thread.Sleep(1000);
+
+                        if (!antiAfkBattleground)
+                        {
+                            string goAfkString = "/afk";
+
+                            //! Let the player go AFK visually again so players won't bother them
+                            for (int i = 0; i < goAfkString.Length; ++i)
+                            {
+                                SendMessage(process.MainWindowHandle, WM_CHAR, new IntPtr(goAfkString[i]), IntPtr.Zero);
+                                Thread.Sleep(50);
+                            }
+
+                            SendMessage(process.MainWindowHandle, WM_KEYUP, new IntPtr(VK_RETURN), IntPtr.Zero);
+                            SendMessage(process.MainWindowHandle, WM_KEYDOWN, new IntPtr(VK_RETURN), IntPtr.Zero);
+                        }
+                    }
+                    catch
+                    {
+
+                    }
                 }
 
                 //! Sleep for ~28.3 minutes so we don't log to the char screen unless the user
