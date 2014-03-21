@@ -44,34 +44,47 @@ namespace Simple_Anti_AFK
 
             while (true)
             {
-                new Thread(() =>
+                try
                 {
-                    try
+                    string antiAfkString = "/w Namethatdoesnotexistatall a";
+
+                    //! Send the message
+                    SendMessage(process.MainWindowHandle, WM_KEYUP, new IntPtr(VK_RETURN), IntPtr.Zero);
+                    SendMessage(process.MainWindowHandle, WM_KEYDOWN, new IntPtr(VK_RETURN), IntPtr.Zero);
+
+                    Thread.Sleep(500);
+
+                    //! Write out the message above (slash opens chatbox automatically)
+                    for (int i = 0; i < antiAfkString.Length; ++i)
                     {
-                        Thread.CurrentThread.IsBackground = true;
-
-                        string antiAfkString = "/w Namethatdoesnotexistatall a";
-
-                        //! Write out the message above (slash opens chatbox automatically)
-                        for (int i = 0; i < antiAfkString.Length; ++i)
-                        {
-                            SendMessage(process.MainWindowHandle, WM_CHAR, new IntPtr(antiAfkString[i]), IntPtr.Zero);
-                            Thread.Sleep(50);
-                        }
-
-                        //! Send the message
-                        SendMessage(process.MainWindowHandle, WM_KEYUP, new IntPtr(VK_RETURN), IntPtr.Zero);
-                        SendMessage(process.MainWindowHandle, WM_KEYDOWN, new IntPtr(VK_RETURN), IntPtr.Zero);
-
-                        Thread.CurrentThread.Abort();
+                        SendMessage(process.MainWindowHandle, WM_CHAR, new IntPtr(antiAfkString[i]), IntPtr.Zero);
+                        Thread.Sleep(50);
                     }
-                    catch
+
+                    //! Send the message
+                    SendMessage(process.MainWindowHandle, WM_KEYUP, new IntPtr(VK_RETURN), IntPtr.Zero);
+                    SendMessage(process.MainWindowHandle, WM_KEYDOWN, new IntPtr(VK_RETURN), IntPtr.Zero);
+
+                    Thread.Sleep(1000);
+
+                    string goAfkString = "/afk";
+
+                    //! Let the player go AFK visually again so players won't bother them
+                    for (int i = 0; i < goAfkString.Length; ++i)
                     {
-                        Thread.CurrentThread.Abort();
+                        SendMessage(process.MainWindowHandle, WM_CHAR, new IntPtr(goAfkString[i]), IntPtr.Zero);
+                        Thread.Sleep(50);
                     }
-                }).Start();
 
-                Thread.Sleep(1700000); //! Sleep for ~28.3 minutes so we don't log to the char screen
+                    SendMessage(process.MainWindowHandle, WM_KEYUP, new IntPtr(VK_RETURN), IntPtr.Zero);
+                    SendMessage(process.MainWindowHandle, WM_KEYDOWN, new IntPtr(VK_RETURN), IntPtr.Zero);
+                }
+                catch
+                {
+
+                }
+
+                Thread.Sleep(1700000); //! Sleep for ~28.3 minutes so we don't log to the char screen 
             }
         }
     }
