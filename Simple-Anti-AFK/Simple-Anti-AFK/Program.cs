@@ -74,12 +74,16 @@ namespace Simple_Anti_AFK
 
             Console.WriteLine("Entering whisper loop now. Your character(s) won't go AFK.");
 
+            //! Sleep for X minutes (~28 / ~4) before the first whisper.
+            Thread.Sleep(antiAfkBattleground ? 290000 : 1700000);
+
             while (true)
             {
                 foreach (Process process in processesList)
                 {
                     try
                     {
+
                         string antiAfkString = "/w Namethatdoesnotexistatall a";
 
                         //! Send the message
