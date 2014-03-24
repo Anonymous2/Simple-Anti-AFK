@@ -74,6 +74,16 @@ namespace Simple_Anti_AFK
 
             Console.WriteLine("Entering whisper loop now. Your character(s) won't go AFK.");
 
+            //! Make sure the return key is released for each process before continuing. Not the cleanest, but it has to be made sure.
+            foreach (Process process in processesList)
+            {
+                for (int i = 0; i < 2; ++i)
+                {
+                    SendMessage(process.MainWindowHandle, WM_KEYDOWN, new IntPtr(VK_RETURN), IntPtr.Zero);
+                    SendMessage(process.MainWindowHandle, WM_KEYUP, new IntPtr(VK_RETURN), IntPtr.Zero);
+                }
+            }
+
             //! Sleep for X minutes (~28 / ~4) before the first whisper.
             Thread.Sleep(antiAfkBattleground ? 290000 : 1700000);
 
