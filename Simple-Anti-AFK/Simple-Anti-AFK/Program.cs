@@ -83,10 +83,10 @@ namespace Simple_Anti_AFK
                         string antiAfkString = "/w Namethatdoesnotexistatall a";
 
                         //! Send the message
-                        SendMessage(process.MainWindowHandle, WM_KEYUP, new IntPtr(VK_RETURN), IntPtr.Zero);
                         SendMessage(process.MainWindowHandle, WM_KEYDOWN, new IntPtr(VK_RETURN), IntPtr.Zero);
+                        SendMessage(process.MainWindowHandle, WM_KEYUP, new IntPtr(VK_RETURN), IntPtr.Zero);
 
-                        Thread.Sleep(500);
+                        Thread.Sleep(100);
 
                         //! Write out the message above (slash opens chatbox automatically)
                         for (int i = 0; i < antiAfkString.Length; ++i)
@@ -96,8 +96,8 @@ namespace Simple_Anti_AFK
                         }
 
                         //! Send the message
-                        SendMessage(process.MainWindowHandle, WM_KEYUP, new IntPtr(VK_RETURN), IntPtr.Zero);
                         SendMessage(process.MainWindowHandle, WM_KEYDOWN, new IntPtr(VK_RETURN), IntPtr.Zero);
+                        //SendMessage(process.MainWindowHandle, WM_KEYUP, new IntPtr(VK_RETURN), IntPtr.Zero);
 
                         Thread.Sleep(1000);
 
@@ -112,8 +112,8 @@ namespace Simple_Anti_AFK
                                 Thread.Sleep(50);
                             }
 
-                            SendMessage(process.MainWindowHandle, WM_KEYUP, new IntPtr(VK_RETURN), IntPtr.Zero);
                             SendMessage(process.MainWindowHandle, WM_KEYDOWN, new IntPtr(VK_RETURN), IntPtr.Zero);
+                            SendMessage(process.MainWindowHandle, WM_KEYUP, new IntPtr(VK_RETURN), IntPtr.Zero);
                         }
                     }
                     catch
